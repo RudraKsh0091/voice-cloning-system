@@ -63,6 +63,9 @@ class TTSEngine:
         logger.info("First run will download ~1.8GB of model weights...")
 
         try:
+            import os
+            os.environ["COQUI_TOS_AGREED"] = "1"
+            
             import torch
             original_torch_load = torch.load
             torch.load = lambda *args, **kwargs: original_torch_load(*args, **{**kwargs, "weights_only": False})

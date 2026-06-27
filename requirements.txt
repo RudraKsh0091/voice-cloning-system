@@ -1,3 +1,5 @@
+# requirements.txt
+
 # Core ML — pinned for compatibility
 torch==2.1.0
 torchaudio==2.1.0
@@ -12,9 +14,9 @@ soundfile>=0.12.1
 numpy>=1.24.0
 
 # Web UI
-gradio>=4.0.0
+gradio>=4.40.0
 
 # Utilities
 tqdm>=4.65.0
 transformers==4.40.0
-huggingface-hub==0.23.0
+huggingface-hub>=0.23.0

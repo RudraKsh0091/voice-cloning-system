@@ -1,8 +1,8 @@
 # requirements.txt
 
-# Core ML — pinned for compatibility
-torch==2.1.0
-torchaudio==2.1.0
+# Core ML
+torch>=2.5.0
+torchaudio>=2.5.0
 
 # Speech & Audio
 speechbrain>=1.0.0
@@ -18,5 +18,5 @@ gradio>=4.40.0
 
 # Utilities
 tqdm>=4.65.0
-transformers==4.40.0
+transformers>=4.40.0
 huggingface-hub>=0.23.0

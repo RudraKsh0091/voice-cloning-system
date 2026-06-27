@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+audioenv/
+.audioenv/
+
+# Model weights (large files — never commit these)
+*.pt
+*.pth
+*.ckpt
+*.bin
+pretrained_models/
+tts_models/
+
+# Generated audio (keep folders, ignore contents)
+outputs/*
+samples/*
+!outputs/.gitkeep
+!samples/.gitkeep
+
+# SpeechBrain cache
+speechbrain_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

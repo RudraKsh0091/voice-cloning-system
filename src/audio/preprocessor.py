@@ -68,7 +68,7 @@ class AudioPreprocessor:
         
         non_silent = (signal.abs() > threshold).nonzero(as_tuple=True)[0]
         
-        if len(non_silent) == 9:
+        if len(non_silent) == 0:
             logger.warning("Audio appears to be entirely silent")
             return waveform
         

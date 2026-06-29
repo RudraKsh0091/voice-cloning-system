@@ -71,6 +71,24 @@ def clone_voice(reference_audio, text):
 
         # Save output to a temp file Gradio can serve
         output_path = OUTPUTS_DIR / "gradio_output.wav"
+        
+        quality = cloner.analyze_reference(reference_audio)
+
+        quality_md = f"""
+        ### 🎤 Reference Audio Analysis
+
+        **Quality Score:** {quality['score']}/100
+
+        **Rating:** {quality['rating']}
+
+        | Metric | Value |
+        |--------|------|
+        | Duration | {quality['duration']} s |
+        | Sample Rate | {quality['sample_rate']} Hz |
+        | RMS Loudness | {quality['rms']} |
+        | Silence | {quality['silence']} % |
+        | Clipping | {"Yes" if quality["clipping"] else "No"} |
+        """
 
         output_path = cloner.clone(
             reference_audio = reference_audio,
@@ -95,13 +113,13 @@ def clone_voice(reference_audio, text):
         similarity_md = f"**Speaker Similarity:** {sim_pct:.1f}% — {sim_label}"
         status_md     = "✅ Voice cloning complete!"
 
-        return str(output_path), similarity_md, status_md
+        return str(output_path), quality_md, similarity_md, status_md
 
     except ValueError as e:
-        return None, "", f"⚠️ Input error: {str(e)}"
+        return None, "", "", f"⚠️ Input error: {str(e)}"
     except Exception as e:
         logger.error(f"Cloning failed: {e}")
-        return None, "", f"❌ Error: {str(e)}"
+        return None, "", "", f"❌ Error: {str(e)}"
 
 
 # ── Gradio UI ─────────────────────────────────────────────────────────────────
@@ -156,6 +174,7 @@ def build_ui():
             # Right column — outputs
             with gr.Column(scale=1):
                 gr.Markdown("### 🔈 Cloned Voice Output")
+                quality_display = gr.Markdown("")
                 output_audio = gr.Audio(
                     label    = "Generated audio",
                     type     = "filepath",
@@ -180,7 +199,7 @@ def build_ui():
         clone_btn.click(
             fn      = clone_voice,
             inputs  = [reference_audio, text_input],
-            outputs = [output_audio, similarity_display, status_display],
+            outputs = [output_audio, quality_display, similarity_display, status_display],
         )
 
     return demo

@@ -7,6 +7,7 @@ from config import DEVICE, OUTPUTS_DIR
 from src.audio.preprocessor import AudioPreprocessor
 from src.encoder.speaker_encoder import SpeakerEncoder
 from src.synthesizer.tts_engine import TTSEngine
+from src.audio.quality_analyzer import AudioQualityAnalyzer
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +17,7 @@ class VoiceCloner:
         self.preprocessor = AudioPreprocessor()
         self.tts = TTSEngine()
         self.encoder = SpeakerEncoder()
+        self.analyzer = AudioQualityAnalyzer()
         logger.info("VoiceCloner ready!")
         
     # ── Public API ────────────────────────────────────────────────────────────
@@ -51,6 +53,7 @@ class VoiceCloner:
         
         return output_path
     
+    
     def compare_voices(self, audio_path_1: str | Path, audio_path_2: str | Path) -> float:
         """
         Compare two audio clips and return their speaker similarity score.
@@ -73,6 +76,9 @@ class VoiceCloner:
         logger.info(f"Voice similarity: {similarity:.4f}")
 
         return similarity
+    
+    def analyze_reference(self, audio_path):
+        return self.analyzer.analyze(audio_path)
     
     # ── Private Methods ───────────────────────────────────────────────────────
 

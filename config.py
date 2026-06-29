@@ -17,6 +17,7 @@ SAMPLE_RATE       = 16000   # Hz — ECAPA-TDNN expects 16kHz
 TARGET_DURATION   = 6.0     # seconds — ideal reference clip length
 MIN_DURATION      = 3.0     # seconds — reject clips shorter than this
 MAX_DURATION      = 30.0    # seconds — trim clips longer than this
+TOP_DB = 30
 
 # ── Speaker Encoder ──────────────────────────────────────────────────────────────
 SPEAKER_ENCODER_SOURCE = "speechbrain/spkrec-ecapa-voxceleb"

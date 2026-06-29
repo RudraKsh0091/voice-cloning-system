@@ -1,3 +1,4 @@
+import librosa
 import torch
 import torchaudio.transforms as T
 import soundfile as sf
@@ -5,7 +6,7 @@ import numpy as np
 import logging
 from pathlib import Path
 
-from config import SAMPLE_RATE, MIN_DURATION, MAX_DURATION, TARGET_DURATION
+from config import SAMPLE_RATE, MIN_DURATION, MAX_DURATION, TARGET_DURATION, TOP_DB
 
 logger = logging.getLogger(__name__)
 
@@ -63,23 +64,22 @@ class AudioPreprocessor:
         return waveform
     
     def _trim_silence(self, waveform: torch.Tensor) -> torch.Tensor:
-        signal = waveform.squeeze(0)
-        threshold = signal.abs().max() * 0.01
-        
-        non_silent = (signal.abs() > threshold).nonzero(as_tuple=True)[0]
-        
-        if len(non_silent) == 0:
-            logger.warning("Audio appears to be entirely silent")
-            return waveform
-        
-        start = non_silent[0].item()
-        end = non_silent[-1].item() + 1
-        
-        trimmed = signal[start:end].unsqueeze(0)
+        signal = waveform.squeeze(0).numpy()
+
+        trimmed, _ = librosa.effects.trim(
+            signal,
+            top_db=TOP_DB
+        )
+
+        trimmed = torch.from_numpy(trimmed).unsqueeze(0)
+
         original = waveform.shape[1] / self.target_sr
         after = trimmed.shape[1] / self.target_sr
-        logger.info(f"Silence trimmed: {original:.2f}s -> {after:.2f}s")
-        
+
+        logger.info(
+            f"Silence trimmed: {original:.2f}s -> {after:.2f}s"
+        )
+
         return trimmed
     
     def _validate_duration(self, waveform: torch.Tensor) -> torch.Tensor:

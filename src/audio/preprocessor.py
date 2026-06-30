@@ -34,7 +34,7 @@ class AudioPreprocessor:
         waveform = self._normalize(waveform)
         
         duration = waveform.shape[1] / self.target_sr
-        logger.info(f"Preproocessed audio: {duration:.2f}s @ {self.target_sr}Hz mono")
+        logger.info(f"Preprocessed audio: {duration:.2f}s @ {self.target_sr}Hz mono")
         
         return waveform, self.target_sr
     

@@ -3,7 +3,7 @@ import numpy as np
 import soundfile as sf
 from pathlib import Path
 
-from config import SAMPLE_RATE, MIN_DURATION, MAX_DURATION, TOP_DB
+from config import MIN_DURATION, MAX_DURATION, TOP_DB
 
 class AudioQualityAnalyzer:
     """

@@ -6,13 +6,13 @@ import numpy as np
 import logging
 from pathlib import Path
 
-from config import SAMPLE_RATE, MIN_DURATION, MAX_DURATION, TARGET_DURATION, TOP_DB
+from config import MIN_DURATION, MAX_DURATION, TARGET_DURATION, TOP_DB
 
 logger = logging.getLogger(__name__)
 
 class AudioPreprocessor:
-    def __init__(self):
-        self.target_sr = SAMPLE_RATE
+    def __init__(self, target_sr):
+        self.target_sr = target_sr
         self.min_duration = MIN_DURATION
         self.max_duration = MAX_DURATION
         self.target_dur = TARGET_DURATION

@@ -1,8 +1,9 @@
 import torch
 import logging
+import soundfile as sf
 from pathlib import Path
 
-from config import DEVICE, OUTPUTS_DIR
+from config import DEVICE, OUTPUTS_DIR, ECAPA_SAMPLE_RATE, XTTS_SAMPLE_RATE
 from src.audio.preprocessor import AudioPreprocessor
 from src.encoder.speaker_encoder import SpeakerEncoder
 from src.synthesizer.tts_engine import TTSEngine
@@ -13,7 +14,8 @@ logger = logging.getLogger(__name__)
 class VoiceCloner:
     def __init__(self):
         logger.info("Initializing VoiceCloner Pipeline...")
-        self.preprocessor = AudioPreprocessor()
+        self.ecapa_preprocessor = AudioPreprocessor(ECAPA_SAMPLE_RATE)
+        self.xtts_preprocessor = AudioPreprocessor(XTTS_SAMPLE_RATE)
         self.tts = TTSEngine()
         self.encoder = SpeakerEncoder()
         self.analyzer = AudioQualityAnalyzer()
@@ -33,7 +35,19 @@ class VoiceCloner:
         logger.info("=" * 50)
         
         logger.info("[1/3] Preprocessing reference audio...")
-        waveform, sr = self.preprocessor.process(reference_audio)
+        
+        # For ECAPA
+        ecapa_waveform, _ = self.ecapa_preprocessor.process(reference_audio)
+        embedding = self.encoder.encode(ecapa_waveform)
+        
+        # For XTTS
+        xtts_waveform, xtts_sr = self.xtts_preprocessor.process(reference_audio)
+        processed_reference = OUTPUTS_DIR / "processed_reference.wav"
+        sf.write(
+            processed_reference,
+            xtts_waveform.squeeze(0).numpy(),
+            xtts_sr,
+        )
         
         logger.info("[2/3] Extracting speaker embedding...")
         embedding = self.encoder.encode(waveform)
@@ -42,7 +56,7 @@ class VoiceCloner:
         logger.info("[3/3] Synthesizing cloned speech...")
         _, output_sr = self.tts.synthesize(
             text = text,
-            reference_audio_path = reference_audio,
+            reference_audio_path = processed_reference,
             output_path = output_path,
         )
 

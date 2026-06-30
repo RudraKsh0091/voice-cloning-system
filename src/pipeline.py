@@ -38,7 +38,6 @@ class VoiceCloner:
         
         # For ECAPA
         ecapa_waveform, _ = self.ecapa_preprocessor.process(reference_audio)
-        embedding = self.encoder.encode(ecapa_waveform)
         
         # For XTTS
         xtts_waveform, xtts_sr = self.xtts_preprocessor.process(reference_audio)
@@ -50,10 +49,11 @@ class VoiceCloner:
         )
         
         logger.info("[2/3] Extracting speaker embedding...")
-        embedding = self.encoder.encode(waveform)
+        embedding = self.encoder.encode(ecapa_waveform)
         logger.info(f"  Embedding norm : {embedding.norm(p=2, dim=1).item():.4f}")
         
         logger.info("[3/3] Synthesizing cloned speech...")
+        logger.info(f"XTTS reference audio: {xtts_sr} Hz")
         _, output_sr = self.tts.synthesize(
             text = text,
             reference_audio_path = processed_reference,
@@ -79,8 +79,8 @@ class VoiceCloner:
                    < 0.50 = likely different speakers
         """
         
-        wav1, _ = self.preprocessor.process(audio_path_1)
-        wav2, _ = self.preprocessor.process(audio_path_2)
+        wav1, _ = self.ecapa_preprocessor.process(audio_path_1)
+        wav2, _ = self.ecapa_preprocessor.process(audio_path_2)
 
         emb1 = self.encoder.encode(wav1)
         emb2 = self.encoder.encode(wav2)
